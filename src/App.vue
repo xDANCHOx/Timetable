@@ -50,63 +50,99 @@
       <div class="main">
         <h1 class="main-title">Timetable</h1>
         <div class="timetable">
-          <div class="timetable__control">          
-            <div class="timetable__control-data"><button @click="$refs.vuecal.previous()">&lt;</button>{{interval.startData}} - {{interval.endData}}<button @click="$refs.vuecal.next()">&gt;</button></div>
+          <div class="timetable__control">
+            <div class="timetable__control-data">
+              <button @click="$refs.vuecal.previous()">&lt;</button
+              >{{ interval.startData }} - {{ interval.endData
+              }}<button @click="$refs.vuecal.next()">&gt;</button>
+            </div>
             <div class="d-flex-center">
-              <div class="timetable__control__active-view" v-for="(view, index) in views" :key="view.id">
-                <button @click="selectedView(view.title, index)" :class="{'active-view': view.active}">{{view.title}}</button>
+              <div
+                class="timetable__control__active-view"
+                v-for="(view, index) in views"
+                :key="view.id"
+              >
+                <button
+                  @click="selectedView(view.title, index)"
+                  :class="{ 'active-view': view.active }"
+                >
+                  {{ view.title }}
+                </button>
               </div>
             </div>
           </div>
           <div class="timetable__filters">
             <div>
-              <select class="timetable__filters-select">
+              <select class="timetable__filters-select" disabled>
                 <option value="" disabled selected hidden>Course level</option>
-                <option :value="level.value" v-for="level in courseLevels" :key="level.id">
-                  {{level.title}}
+                <option
+                  :value="level.value"
+                  v-for="level in courseLevels"
+                  :key="level.id"
+                >
+                  {{ level.title }}
                 </option>
               </select>
-              <select class="timetable__filters-select">
-                <option :value="group.value" v-for="group in groups" :key="group.id">
-                  {{group.title}}
+              <select class="timetable__filters-select" disabled>
+                <option value="" disabled selected hidden>Group</option>
+                <option
+                  :value="group.value"
+                  v-for="group in groups"
+                  :key="group.id"
+                >
+                  {{ group.title }}
                 </option>
               </select>
-              <select class="timetable__filters-select">
-                <option :value="item.value" v-for="item in classes" :key="item.id">
-                  {{item.title}}
+              <select class="timetable__filters-select" v-model="selectedClass">
+                <option
+                  :value="item.value"
+                  v-for="item in classes"
+                  :key="item.id"
+                >
+                  {{ item.title }}
                 </option>
               </select>
             </div>
             <div>
-              <select class="timetable__filters-select" style="width: auto">
-                <option :value="timezone.value" v-for="timezone in timezones" :key="timezone.id">
-                  {{timezone.title}}
+              <select
+                class="timetable__filters-select"
+                style="width: auto"
+                v-model="selectedTimezone"
+              >
+                <option
+                  :value="timezone.value"
+                  v-for="timezone in timezones"
+                  :key="timezone.id"
+                >
+                  {{ timezone.title }}
                 </option>
               </select>
             </div>
           </div>
-          <vue-cal 
-          small
-          :active-view.sync="activeView"
-          ref="vuecal"
-          hide-view-selector
-          hide-title-bar
-          :events="events"
-          editable-events
-          @ready="getIntervalDate($event)"
-          @view-change="getIntervalDate($event)"
+          <vue-cal
+            :time-from="5 * 60"
+            :time-to="21 * 60"
+            small
+            :active-view.sync="activeView"
+            ref="vuecal"
+            hide-view-selector
+            hide-title-bar
+            :events="filteredClasses"
+            editable-events
+            @ready="getIntervalDate($event)"
+            @view-change="getIntervalDate($event)"
+            :time-cell-height="60"
           />
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import VueCal from 'vue-cal';
-import 'vue-cal/dist/drag-and-drop.js'
-import 'vue-cal/dist/vuecal.css';
+import VueCal from "vue-cal";
+import "vue-cal/dist/drag-and-drop.js";
+import "vue-cal/dist/vuecal.css";
 export default {
   components: { VueCal },
   name: "App",
@@ -114,107 +150,130 @@ export default {
     return {
       views: [
         {
-          title: 'day',
+          title: "day",
           active: false
         },
         {
-          title: 'week',
+          title: "week",
           active: true
         },
         {
-          title: 'month',
+          title: "month",
           active: false
-        },
+        }
       ],
       courseLevels: [
         {
-          title: 'A',
-          value: 'a'
+          title: "A",
+          value: "a"
         },
         {
-          title: 'B',
-          value: 'b'
+          title: "B",
+          value: "b"
         },
         {
-          title: 'C',
-          value: 'c'
+          title: "C",
+          value: "c"
         },
         {
-          title: 'D',
-          value: 'd'
+          title: "D",
+          value: "d"
         }
       ],
       groups: [
         {
-          title: 'A2',
-          value: 'a2'
+          title: "A2",
+          value: "a2"
         },
         {
-          title: 'A1',
-          value: 'a1'
+          title: "A1",
+          value: "a1"
         },
         {
-          title: 'B2',
-          value: 'b2'
+          title: "B2",
+          value: "b2"
         },
         {
-          title: 'B1',
-          value: 'b1'
+          title: "B1",
+          value: "b1"
         }
       ],
       classes: [
         {
-          title: 'All classes',
-          value: 'all'
+          title: "All classes",
+          value: "all"
         },
         {
-          title: 'First',
-          value: 'first'
+          title: "First",
+          value: "first"
         },
         {
-          title: 'Second',
-          value: 'second'
-        },
-        {
-          title: 'Third',
-          value: 'third'
+          title: "Second",
+          value: "second"
         }
       ],
       timezones: [
         {
-          title: '(UTC +04:00)  Asua/Yerevan',
-          value: 'all'
+          title: "(UTC +04:00) Asua/Yerevan",
+          value: "04:00"
         },
         {
-          title: '(UTC +06:00)  Asua/Astana',
-          value: 'first'
-        },
-        {
-          title: '(UTC +08:00)  Asua/Pery',
-          value: 'second'
-        },
+          title: "(UTC +03:00) Moscow, Saint Petersburg",
+          value: "03:00"
+        }
       ],
       events: [
         {
-          start: '2020-10-19 14:00',
-          end: '2020-10-19 17:30',
-          title: 'Boring event',
+          start: "2020-10-19 9:00",
+          end: "2020-10-19 12:00",
+          title: "B2 – Kolette",
+          class: "group-orange",
+          value: "second"
         },
         {
-          start: '2020-10-19 14:00',
-          end: '2020-10-19 17:30',
-          title: 'Boring event',
+          start: "2020-10-20 9:00",
+          end: "2020-10-20 11:00",
+          title: "A2 – Currywu",
+          class: "group-violet",
+          value: "second"
         },
         {
-          start: '2020-10-19 14:00',
-          end: '2020-10-19 17:30',
-          title: 'Boring event',
+          start: "2020-10-20 13:00",
+          end: "2020-10-20 16:00",
+          title: "A1 – Kolette",
+          class: "group-violet",
+          value: "first"
         },
+        {
+          start: "2020-10-21 9:00",
+          end: "2020-10-21 10:00",
+          title: "A2 – Currywu",
+          class: "group-violet",
+          value: "second"
+        },
+        {
+          start: "2020-10-22 07:00",
+          end: "2020-10-22 10:00",
+          title: "A1 – Kolette",
+          class: "group-orange",
+          value: "first"
+        }
       ],
-      activeView: 'week',
-      interval:{
-        startData: '',
-        endData: '',
+      activeView: "week",
+      interval: {
+        startData: "",
+        endData: ""
+      },
+      selectedClass: "all",
+      selectedTimezone: "04:00"
+    };
+  },
+  computed: {
+    filteredClasses() {
+      if (this.selectedClass === "all") {
+        return this.events;
+      } else {
+        return this.events.filter(item => item.value === this.selectedClass);
       }
     }
   },
@@ -230,8 +289,14 @@ export default {
       });
     },
     getIntervalDate(data) {
-      this.interval.startData = data.startDate.toLocaleString('en-us', { day: 'numeric', month: 'long' });
-      this.interval.endData = data.endDate.toLocaleString('en-us', { day: 'numeric', month: 'long' });
+      this.interval.startData = data.startDate.toLocaleString("en-us", {
+        day: "numeric",
+        month: "long"
+      });
+      this.interval.endData = data.endDate.toLocaleString("en-us", {
+        day: "numeric",
+        month: "long"
+      });
     }
   }
 };
@@ -256,7 +321,7 @@ html,
 body {
   width: 100%;
   height: 100%;
-  background: #fbfbfb;
+  background-color: #f7f7fd;
   font-size: 18px;
 }
 ul {
@@ -282,11 +347,12 @@ ul {
   justify-content: space-between;
   align-items: center;
   z-index: 100;
-  position: relative;
+  position: fixed;
+  width: 100%;
 }
 .header__search {
   position: relative;
-  left: 180px;
+  left: 186px;
   display: flex;
   align-items: center;
 }
@@ -299,8 +365,10 @@ ul {
   box-shadow: 3px 3px 30px rgba(0, 0, 0, 0.1);
   background: white;
   width: 252px;
-  padding: 20px 0 20px 40px;
+  padding: 28px 0 20px 40px;
   height: 100%;
+  margin-top: 60px;
+  position: fixed;
 }
 .sidebar li {
   display: flex;
@@ -317,20 +385,24 @@ ul {
   border-right: 4px solid #258ffb;
 }
 .main {
-  padding: 30px 25px;
+  padding: 40px 25px;
   width: 100%;
   height: 100%;
+  margin-top: 60px;
+  margin-left: 250px;
 }
 .main-title {
   font-weight: 600;
   font-size: 32px;
   margin-bottom: 32px;
+  margin-left: 54px;
 }
 .timetable__control {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  margin-left: 54px;
 }
 .timetable__control-data {
   color: #383838;
@@ -343,10 +415,10 @@ ul {
   background: none;
   cursor: pointer;
   padding: 0 16px;
-  font-size: 18px
+  font-size: 18px;
 }
 .timetable__control__active-view button {
-  border:none;
+  border: none;
   padding: 4px 12px;
   background: none;
   font-size: 16px;
@@ -356,11 +428,11 @@ ul {
   outline: none;
 }
 .timetable__control__active-view button:hover {
-  background: #E1E5F9;
+  background: #e1e5f9;
   border-radius: 4px;
 }
 .active-view {
-  background: #E1E5F9 !important;
+  background: #e1e5f9 !important;
   border-radius: 4px;
 }
 .timetable__filters {
@@ -371,15 +443,17 @@ ul {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-left: 54px;
 }
 .timetable__filters-select {
   margin: 0px 8px;
   padding: 6px 12px;
-  border: 1px solid #D9D9D9;
+  border: 1px solid #d9d9d9;
   background-color: white;
   border-radius: 4px;
   width: 178px;
   outline: none;
+  font-size: 16px;
 }
 .vuecal__cell:before {
   border: none;
@@ -387,13 +461,10 @@ ul {
 .vuecal__cells {
   background: white;
   border-radius: 8px;
-} 
+}
 .vuecal__heading > .vuecal__flex {
   height: auto;
-  border-right: 1px solid #D9D9D9;
-}
-.vuecal__flex > .vuecal__heading > .vuecal__flexlast-child {
-  border: none;
+  border-right: 1px solid #d9d9d9;
 }
 .vuecal {
   box-shadow: none;
@@ -407,10 +478,53 @@ ul {
 .vuecal__time-cell:first-child > .vuecal__time-cell-line {
   display: none;
 }
+.vuecal__time-cell:first-child > .vuecal__time-cell-label {
+  display: none;
+}
 .vuecal__time-column .vuecal__time-cell-line:before {
-  border-top: 2px dashed #D9D9D9;
+  border-top: 2px dashed #d9d9d9;
+  left: 55px;
 }
 .vuecal__flex .vuecal__weekdays-headings {
-  border:none;
+  border: none;
+}
+.vuecal__cell--current,
+.vuecal__cell--today {
+  background: rgba(37, 143, 251, 0.1);
+  border-radius: 8px;
+}
+.vuecal__cell {
+  padding: 0 8px;
+}
+.vuecal__time-cell {
+  /* height: 60px !important; */
+  text-align: left !important;
+}
+.vuecal__time-cell-label {
+  position: relative;
+  bottom: 8px;
+  color: #383838;
+}
+.vuecal__flex .weekday-label {
+  color: #72849e;
+}
+.vuecal__event.group-orange {
+  background-color: #ffeece;
+  border-radius: 4px;
+  border-left: 8px solid #ffbc42;
+}
+.vuecal__event.group-violet {
+  background-color: #ccc6ff;
+  border-radius: 4px;
+  border-left: 6px solid#A499FF;
+}
+.vuecal__no-event {
+  display: none;
+}
+.vuecal--month-view .vuecal__cell {
+  height: 80px;
+}
+.vuecal--month-view {
+  margin-left: 54px;
 }
 </style>
